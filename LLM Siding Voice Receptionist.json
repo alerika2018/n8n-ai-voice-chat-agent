@@ -1,0 +1,188 @@
+{
+  "name": "LLM Siding Voice Receptionist",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.question }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "b0315a7d-f7a3-4397-b509-efdb52197d4f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        240
+      ],
+      "id": "5b332847-8180-4ab1-9e44-78fb6cdcb86a",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cqzmg1Hv7mQ4HdUM",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Used to retrieve data from a table in Supabase",
+        "tableName": {
+          "__rl": true,
+          "value": "knowledgebase",
+          "mode": "list",
+          "cachedResultName": "knowledgebase"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.4,
+      "position": [
+        144,
+        240
+      ],
+      "id": "b8584198-2f0b-4c1c-b71c-3f8b29652406",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "8CqDLRTkbTziqLyc",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        224,
+        448
+      ],
+      "id": "9bfd5b64-8c5d-4fea-acbd-2bb8273b167c",
+      "name": "Embeddings Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cqzmg1Hv7mQ4HdUM",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "siding-receptionist",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        0
+      ],
+      "id": "24ca0c01-872d-430b-8457-a86cc7f33bd8",
+      "name": "Webhook",
+      "webhookId": "4ac2ce25-6d58-46ee-80e1-bd128aef7600"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        304,
+        0
+      ],
+      "id": "9eeda152-3158-4398-9fe6-17d3fa586bcd",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0f2eb0eb-3d97-43c6-b612-84ae459c9da2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e00f0d8f2145046d6ba0dace31caf653ec378be19d23351d16cfbc14917de77b"
+  },
+  "nodeGroups": [],
+  "id": "shZGWVGIim1N3IYs",
+  "tags": []
+}
