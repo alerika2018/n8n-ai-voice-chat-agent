@@ -14,7 +14,7 @@ This is a shorter voice-based version of my [AI Chat Agent](https://github.com/a
 - ngrok – Local webhook exposure
 
 ### Demo
-![Voice Agent Demo](./Voicechats2.mp4)
+[▶ Watch Voice Agent Demo](./Voicechats2.mp4)
 
 ### Workflow
 ![n8n Workflow](./voice-chat-ai-agent.png)
